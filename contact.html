@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Charity Profile - HelpHub</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header>
+        <h1>HelpHub</h1>
+        <nav>
+            <ul>
+                <li><a href="index.html">Home</a></li>
+                <li><a href="charities.html">Charities</a></li>
+                <li><a href="contact.html">Contact</a></li>
+            </ul>
+        </nav>
+    </header>
+    
+    <main>
+        <section>
+            <h2>Charity Name</h2>
+            <p><strong>Mission:</strong> Description of the charity's mission and goals.</p>
+            <p><strong>Location:</strong> City, Country</p>
+            <p><strong>Contact:</strong> Email or phone number</p>
+            <img src="charity-image.jpg" alt="Charity Image" class="charity-image">
+            
+            <h3>How You Can Help</h3>
+            <p>Details on how volunteers can contribute.</p>
+            
+            <button id="volunteerBtn">Volunteer Now</button>
+            
+            <div id="volunteerForm" style="display: none;">
+                <h3>Sign Up to Volunteer</h3>
+                <form>
+                    <label for="name">Name:</label>
+                    <input type="text" id="name" name="name" required>
+                    
+                    <label for="email">Email:</label>
+                    <input type="email" id="email" name="email" required>
+                    
+                    <button type="submit">Submit</button>
+                </form>
+            </div>
+        </section>
+    </main>
+    
+    <footer>
+        <p>&copy; 2025 HelpHub. All rights reserved.</p>
+    </footer>
+    
+    <script>
+        document.getElementById("volunteerBtn").addEventListener("click", function() {
+            document.getElementById("volunteerForm").style.display = "block";
+        });
+    </script>
+</body>
+</html>
