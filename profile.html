@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Charity Profile - HelpHub</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header>
+        <h1>HelpHub</h1>
+        <nav>
+            <ul>
+                <li><a href="index.html">Home</a></li>
+                <li><a href="charities.html">Charities</a></li>
+                <li><a href="contact.html">Contact</a></li>
+            </ul>
+        </nav>
+    </header>
+    
+    <main>
+        <section id="charity-profile">
+            <h2 id="charity-name">Loading...</h2>
+            <p><strong>Mission:</strong> <span id="charity-mission"></span></p>
+            <p><strong>Location:</strong> <span id="charity-location"></span></p>
+            <p><strong>Contact:</strong> <span id="charity-contact"></span></p>
+            <img id="charity-image" src="" alt="Charity Image" class="charity-image">
+            
+            <h3>How You Can Help</h3>
+            <p id="charity-help"></p>
+            
+            <button id="volunteerBtn">Volunteer Now</button>
+            
+            <div id="volunteerForm" style="display: none;">
+                <h3>Sign Up to Volunteer</h3>
+                <form>
+                    <label for="name">Name:</label>
+                    <input type="text" id="name" name="name" required>
+                    
+                    <label for="email">Email:</label>
+                    <input type="email" id="email" name="email" required>
+                    
+                    <button type="submit">Submit</button>
+                </form>
+            </div>
+        </section>
+    </main>
+    
+    <footer>
+        <p>&copy; 2025 HelpHub. All rights reserved.</p>
+    </footer>
+    
+    <script>
+        const charities = {
+            "1": {
+                name: "American Red Cross",
+                mission: "Providing emergency assistance, disaster relief, and disaster preparedness education in the U.S.",
+                location: "United States",
+                contact: "contact@redcross.org",
+                image: "redcross.jpg",
+                help: "You can donate, give blood, or volunteer for disaster relief."
+            },
+            "2": {
+                name: "Alzheimer's Association",
+                mission: "Focusing on Alzheimer's disease care, support, and research.",
+                location: "United States",
+                contact: "contact@alz.org",
+                image: "alzheimers.jpg",
+                help: "You can participate in fundraising events or volunteer to support patients."
+            },
+            "3": {
+                name: "Save the Children",
+                mission: "Improving the lives of children worldwide through health and education initiatives.",
+                location: "Global",
+                contact: "contact@savethechildren.org",
+                image: "savethechildren.jpg",
+                help: "You can sponsor a child, donate, or advocate for children's rights."
+            }
+        };
+
+        function getCharityId() {
+            const params = new URLSearchParams(window.location.search);
+            return params.get("id");
+        }
+
+        function loadCharity() {
+            const charityId = getCharityId();
+            console.log("Charity ID:", charityId);
+
+            if (charities[charityId]) {
+                document.getElementById("charity-name").textContent = charities[charityId].name;
+                document.getElementById("charity-mission").textContent = charities[charityId].mission;
+                document.getElementById("charity-location").textContent = charities[charityId].location;
+                document.getElementById("charity-contact").textContent = charities[charityId].contact;
+                document.getElementById("charity-image").src = charities[charityId].image;
+                document.getElementById("charity-help").textContent = charities[charityId].help;
+            } else {
+                document.getElementById("charity-profile").innerHTML = `<h2 class="error-msg">Charity not found</h2>`;
+            }
+        }
+
+        document.getElementById("volunteerBtn").addEventListener("click", function() {
+            document.getElementById("volunteerForm").style.display = "block";
+        });
+
+        window.onload = loadCharity;
+    </script>
+</body>
+</html>
