@@ -5,6 +5,72 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Charities - HelpHub</title>
     <link rel="stylesheet" href="styles.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(135deg, #6a11cb, #2575fc);
+            color: white;
+            text-align: center;
+        }
+        header {
+            background: rgba(0, 0, 0, 0.8);
+            padding: 20px;
+        }
+        nav ul {
+            list-style: none;
+            padding: 0;
+        }
+        nav ul li {
+            display: inline;
+            margin: 0 15px;
+        }
+        nav a {
+            color: white;
+            text-decoration: none;
+            font-weight: bold;
+        }
+        main {
+            padding: 50px;
+        }
+        .charity-list {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+        .charity {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 20px;
+            border-radius: 10px;
+            width: 300px;
+            transition: transform 0.3s ease;
+        }
+        .charity:hover {
+            transform: scale(1.05);
+        }
+        .btn {
+            display: inline-block;
+            background: #ffcc00;
+            color: #333;
+            padding: 10px 15px;
+            text-decoration: none;
+            font-weight: bold;
+            border-radius: 5px;
+            margin-top: 10px;
+        }
+        .btn:hover {
+            background: #ffdd44;
+        }
+        footer {
+            background: rgba(0, 0, 0, 0.8);
+            padding: 10px;
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+        }
+    </style>
 </head>
 <body>
     <header>
@@ -24,12 +90,12 @@
             <div class="charity-list">
                 <article class="charity">
                     <h3>American Red Cross</h3>
-                    <p>The American National Red Cross is a nonprofit humanitarian organization that provides emergency assistance, disaster relief, and disaster preparedness education in the United States..</p>
+                    <p>The American National Red Cross is a nonprofit humanitarian organization that provides emergency assistance, disaster relief, and disaster preparedness education in the United States.</p>
                     <a href="profile.html?id=1" class="btn">Learn More</a>
                 </article>
                 <article class="charity">
                     <h3>Alzheimer's Association</h3>
-                    <p>The Alzheimer's Association is a nonprofit voluntary health organization that focuses on Alzheimer's disease care, support and research.</p>
+                    <p>The Alzheimer's Association is a nonprofit voluntary health organization that focuses on Alzheimer's disease care, support, and research.</p>
                     <a href="profile.html?id=2" class="btn">Learn More</a>
                 </article>
                 <article class="charity">
