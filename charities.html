@@ -64,26 +64,63 @@
             e.preventDefault();
             
             const address = document.getElementById('address').value;
-            const apiKey = 'YOUR_GOOGLE_MAPS_API_KEY'; // <-- Replace with your real API key
-            const url = `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(address)}&key=${apiKey}`;
+            const url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(address)}`;
             
-            fetch(url)
+            fetch(url, {
+                headers: {
+                    'Accept': 'application/json',
+                    'User-Agent': 'HelpHubApp/1.0 (your-email@example.com)'
+                }
+            })
                 .then(response => response.json())
                 .then(data => {
                     const resultDiv = document.getElementById('location-result');
-                    if (data.status === 'OK') {
-                        const location = data.results[0].geometry.location;
+                    if (data.length > 0) {
+                        const location = data[0];
                         resultDiv.innerHTML = `
-                            <p><strong>Latitude:</strong> ${location.lat}</p>
-                            <p><strong>Longitude:</strong> ${location.lng}</p>
+                            <div style="
+                                background: rgba(255, 255, 255, 0.2);
+                                padding: 20px;
+                                border-radius: 10px;
+                                max-width: 500px;
+                                margin: 20px auto;
+                                text-align: left;
+                            ">
+                                <h3 style="color: #ffcc00;">\ud83d\udccd Location Found:</h3>
+                                <p><strong>Latitude:</strong> ${location.lat}</p>
+                                <p><strong>Longitude:</strong> ${location.lon}</p>
+                                <p><strong>Location Name:</strong> ${location.display_name}</p>
+                            </div>
                         `;
                     } else {
-                        resultDiv.innerHTML = `<p style="color: red;">Unable to find location. Please try again.</p>`;
+                        resultDiv.innerHTML = `
+                            <div style="
+                                background: rgba(255, 0, 0, 0.2);
+                                padding: 20px;
+                                border-radius: 10px;
+                                max-width: 500px;
+                                margin: 20px auto;
+                                text-align: center;
+                            ">
+                                <p style="color: red;">\u274c No location found. Try a different address.</p>
+                            </div>
+                        `;
                     }
                 })
                 .catch(error => {
                     console.error('Error fetching location:', error);
-                    document.getElementById('location-result').innerHTML = `<p style="color: red;">An error occurred. Please try again later.</p>`;
+                    document.getElementById('location-result').innerHTML = `
+                        <div style="
+                            background: rgba(255, 0, 0, 0.2);
+                            padding: 20px;
+                            border-radius: 10px;
+                            max-width: 500px;
+                            margin: 20px auto;
+                            text-align: center;
+                        ">
+                            <p style="color: red;">\u274c An error occurred. Please try again later.</p>
+                        </div>
+                    `;
                 });
         });
     </script>
