@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Charities - HelpHub</title>
     <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.3/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js"></script>
 </head>
 <body>
     <header>
@@ -17,7 +19,7 @@
             </ul>
         </nav>
     </header>
-    
+
     <main>
         <section>
             <h2>Available Charities</h2>
@@ -43,7 +45,6 @@
             </div>
         </section>
 
-        <!-- New section for finding location -->
         <section>
             <h2>Find Charities Near You</h2>
             <form id="location-form">
@@ -53,77 +54,11 @@
             <div id="location-result" style="margin-top: 20px;"></div>
         </section>
     </main>
-    
+
     <footer>
         <p>&copy; 2025 HelpHub. All rights reserved.</p>
     </footer>
 
-    <!-- JavaScript to handle location form and fetch API -->
-    <script>
-        document.getElementById('location-form').addEventListener('submit', function(e) {
-            e.preventDefault();
-            
-            const address = document.getElementById('address').value;
-            const url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(address)}`;
-            
-            fetch(url, {
-                headers: {
-                    'Accept': 'application/json',
-                    'User-Agent': 'HelpHubApp/1.0 (your-email@example.com)'
-                }
-            })
-                .then(response => response.json())
-                .then(data => {
-                    const resultDiv = document.getElementById('location-result');
-                    if (data.length > 0) {
-                        const location = data[0];
-                        resultDiv.innerHTML = `
-                            <div style="
-                                background: rgba(255, 255, 255, 0.2);
-                                padding: 20px;
-                                border-radius: 10px;
-                                max-width: 500px;
-                                margin: 20px auto;
-                                text-align: left;
-                            ">
-                                <h3 style="color: #ffcc00;">\ud83d\udccd Location Found:</h3>
-                                <p><strong>Latitude:</strong> ${location.lat}</p>
-                                <p><strong>Longitude:</strong> ${location.lon}</p>
-                                <p><strong>Location Name:</strong> ${location.display_name}</p>
-                            </div>
-                        `;
-                    } else {
-                        resultDiv.innerHTML = `
-                            <div style="
-                                background: rgba(255, 0, 0, 0.2);
-                                padding: 20px;
-                                border-radius: 10px;
-                                max-width: 500px;
-                                margin: 20px auto;
-                                text-align: center;
-                            ">
-                                <p style="color: red;">\u274c No location found. Try a different address.</p>
-                            </div>
-                        `;
-                    }
-                })
-                .catch(error => {
-                    console.error('Error fetching location:', error);
-                    document.getElementById('location-result').innerHTML = `
-                        <div style="
-                            background: rgba(255, 0, 0, 0.2);
-                            padding: 20px;
-                            border-radius: 10px;
-                            max-width: 500px;
-                            margin: 20px auto;
-                            text-align: center;
-                        ">
-                            <p style="color: red;">\u274c An error occurred. Please try again later.</p>
-                        </div>
-                    `;
-                });
-        });
-    </script>
     <script>
     const charities = [
         { name: "Cruz Roja Argentina", lat: -34.6232632, lon: -58.3975427 },
@@ -138,84 +73,84 @@
             return x * Math.PI / 180;
         }
 
-        const R = 6371; // Radio de la Tierra en km
+        const R = 6371;
         const dLat = toRad(lat2 - lat1);
         const dLon = toRad(lon2 - lon1);
-        const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+        const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
                   Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) *
-                  Math.sin(dLon/2) * Math.sin(dLon/2);
-        const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+                  Math.sin(dLon / 2) * Math.sin(dLon / 2);
+        const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
         return R * c;
     }
 
     document.getElementById('location-form').addEventListener('submit', function(e) {
         e.preventDefault();
-        
+
         const address = document.getElementById('address').value;
         const url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(address)}`;
-        
+
         fetch(url, {
             headers: {
                 'Accept': 'application/json',
                 'User-Agent': 'HelpHubApp/1.0 (your-email@example.com)'
             }
         })
-            .then(response => response.json())
-            .then(data => {
-                const resultDiv = document.getElementById('location-result');
-                if (data.length > 0) {
-                    const location = data[0];
-                    let userLat = parseFloat(location.lat);
-                    let userLon = parseFloat(location.lon);
+        .then(response => response.json())
+        .then(data => {
+            const resultDiv = document.getElementById('location-result');
+            if (data.length > 0) {
+                const location = data[0];
+                let userLat = parseFloat(location.lat);
+                let userLon = parseFloat(location.lon);
 
-                    // Calcular ONG más cercana
-                    let closestCharity = null;
-                    let minDistance = Infinity;
+                let closestCharity = null;
+                let minDistance = Infinity;
 
-                    charities.forEach(charity => {
-                        const distance = haversineDistance(userLat, userLon, charity.lat, charity.lon);
-                        if (distance < minDistance) {
-                            minDistance = distance;
-                            closestCharity = charity;
-                        }
-                    });
+                charities.forEach(charity => {
+                    const distance = haversineDistance(userLat, userLon, charity.lat, charity.lon);
+                    if (distance < minDistance) {
+                        minDistance = distance;
+                        closestCharity = charity;
+                    }
+                });
 
-                    resultDiv.innerHTML = `
-                        <div style="
-                            background: rgba(255, 255, 255, 0.2);
-                            padding: 20px;
-                            border-radius: 10px;
-                            max-width: 500px;
-                            margin: 20px auto;
-                            text-align: left;
-                        ">
-                            <h3 style="color: #ffcc00;">📍 Location Found:</h3>
-                            <p><strong>Latitude:</strong> ${location.lat}</p>
-                            <p><strong>Longitude:</strong> ${location.lon}</p>
-                            <p><strong>Location Name:</strong> ${location.display_name}</p>
-                            <hr style="border-color: white;">
-                            <h3 style="color: #00ffcc;">🎯 Nearest Charity:</h3>
-                            <p><strong>${closestCharity.name}</strong> is approximately <strong>${minDistance.toFixed(2)} km</strong> away from you.</p>
-                        </div>
-                    `;
-                } else {
-                    resultDiv.innerHTML = `
-                        <div style="
-                            background: rgba(255, 0, 0, 0.2);
-                            padding: 20px;
-                            border-radius: 10px;
-                            max-width: 500px;
-                            margin: 20px auto;
-                            text-align: center;
-                        ">
-                            <p style="color: red;">❌ No location found. Try a different address.</p>
-                        </div>
-                    `;
-                }
-            })
-            .catch(error => {
-                console.error('Error fetching location:', error);
-                document.getElementById('location-result').innerHTML = `
+                resultDiv.innerHTML = `
+                    <div style="
+                        background: rgba(255, 255, 255, 0.2);
+                        padding: 20px;
+                        border-radius: 10px;
+                        max-width: 500px;
+                        margin: 20px auto;
+                        text-align: left;
+                    ">
+                        <h3 style="color: #ffcc00;">📍 Location Found:</h3>
+                        <p><strong>Latitude:</strong> ${location.lat}</p>
+                        <p><strong>Longitude:</strong> ${location.lon}</p>
+                        <p><strong>Location Name:</strong> ${location.display_name}</p>
+                        <hr style="border-color: white;">
+                        <h3 style="color: #00ffcc;">🎯 Nearest Charity:</h3>
+                        <p><strong>${closestCharity.name}</strong> is approximately <strong>${minDistance.toFixed(2)} km</strong> away from you.</p>
+                        <a class="btn" target="_blank" href="https://www.google.com/maps/dir/?api=1&origin=${userLat},${userLon}&destination=${closestCharity.lat},${closestCharity.lon}">🚗 Ver cómo llegar</a>
+                    </div>
+                    <div id="map" style="height: 300px; margin-top: 20px; border-radius: 10px;"></div>
+                `;
+
+                setTimeout(() => {
+                    const map = L.map('map').setView([userLat, userLon], 12);
+
+                    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                        attribution: 'Map data © <a href="https://openstreetmap.org">OpenStreetMap</a> contributors'
+                    }).addTo(map);
+
+                    L.marker([userLat, userLon]).addTo(map)
+                        .bindPopup('📍 Tu ubicación')
+                        .openPopup();
+
+                    L.marker([closestCharity.lat, closestCharity.lon]).addTo(map)
+                        .bindPopup(`🎯 ${closestCharity.name}`);
+                }, 0);
+            } else {
+                resultDiv.innerHTML = `
                     <div style="
                         background: rgba(255, 0, 0, 0.2);
                         padding: 20px;
@@ -224,12 +159,27 @@
                         margin: 20px auto;
                         text-align: center;
                     ">
-                        <p style="color: red;">❌ An error occurred. Please try again later.</p>
+                        <p style="color: red;">❌ No location found. Try a different address.</p>
                     </div>
                 `;
-            });
+            }
+        })
+        .catch(error => {
+            console.error('Error fetching location:', error);
+            document.getElementById('location-result').innerHTML = `
+                <div style="
+                    background: rgba(255, 0, 0, 0.2);
+                    padding: 20px;
+                    border-radius: 10px;
+                    max-width: 500px;
+                    margin: 20px auto;
+                    text-align: center;
+                ">
+                    <p style="color: red;">❌ An error occurred. Please try again later.</p>
+                </div>
+            `;
+        });
     });
-</script>
-
+    </script>
 </body>
 </html>
