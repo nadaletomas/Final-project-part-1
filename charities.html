@@ -136,19 +136,21 @@
                 `;
 
                 setTimeout(() => {
-                    const map = L.map('map').setView([userLat, userLon], 12);
+                    if (document.getElementById('map')) {
+                        const map = L.map('map').setView([userLat, userLon], 12);
 
-                    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                        attribution: 'Map data © <a href="https://openstreetmap.org">OpenStreetMap</a> contributors'
-                    }).addTo(map);
+                        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                            attribution: 'Map data © <a href="https://openstreetmap.org">OpenStreetMap</a> contributors'
+                        }).addTo(map);
 
-                    L.marker([userLat, userLon]).addTo(map)
-                        .bindPopup('📍 Tu ubicación')
-                        .openPopup();
+                        L.marker([userLat, userLon]).addTo(map)
+                            .bindPopup('📍 Tu ubicación')
+                            .openPopup();
 
-                    L.marker([closestCharity.lat, closestCharity.lon]).addTo(map)
-                        .bindPopup(`🎯 ${closestCharity.name}`);
-                }, 0);
+                        L.marker([closestCharity.lat, closestCharity.lon]).addTo(map)
+                            .bindPopup(`🎯 ${closestCharity.name}`);
+                    }
+                }, 300);
             } else {
                 resultDiv.innerHTML = `
                     <div style="
