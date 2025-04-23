@@ -124,5 +124,112 @@
                 });
         });
     </script>
+    <script>
+    const charities = [
+        { name: "Cruz Roja Argentina", lat: -34.6232632, lon: -58.3975427 },
+        { name: "UNICEF Argentina", lat: -34.5985817, lon: -58.4240346 },
+        { name: "Banco de Alimentos Buenos Aires", lat: -34.642224, lon: -58.376109 },
+        { name: "Save the Children USA", lat: 41.140599, lon: -73.264748 },
+        { name: "Médicos Sin Fronteras Barcelona", lat: 41.377550, lon: 2.168710 }
+    ];
+
+    function haversineDistance(lat1, lon1, lat2, lon2) {
+        function toRad(x) {
+            return x * Math.PI / 180;
+        }
+
+        const R = 6371; // Radio de la Tierra en km
+        const dLat = toRad(lat2 - lat1);
+        const dLon = toRad(lon2 - lon1);
+        const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+                  Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) *
+                  Math.sin(dLon/2) * Math.sin(dLon/2);
+        const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+        return R * c;
+    }
+
+    document.getElementById('location-form').addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        const address = document.getElementById('address').value;
+        const url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(address)}`;
+        
+        fetch(url, {
+            headers: {
+                'Accept': 'application/json',
+                'User-Agent': 'HelpHubApp/1.0 (your-email@example.com)'
+            }
+        })
+            .then(response => response.json())
+            .then(data => {
+                const resultDiv = document.getElementById('location-result');
+                if (data.length > 0) {
+                    const location = data[0];
+                    let userLat = parseFloat(location.lat);
+                    let userLon = parseFloat(location.lon);
+
+                    // Calcular ONG más cercana
+                    let closestCharity = null;
+                    let minDistance = Infinity;
+
+                    charities.forEach(charity => {
+                        const distance = haversineDistance(userLat, userLon, charity.lat, charity.lon);
+                        if (distance < minDistance) {
+                            minDistance = distance;
+                            closestCharity = charity;
+                        }
+                    });
+
+                    resultDiv.innerHTML = `
+                        <div style="
+                            background: rgba(255, 255, 255, 0.2);
+                            padding: 20px;
+                            border-radius: 10px;
+                            max-width: 500px;
+                            margin: 20px auto;
+                            text-align: left;
+                        ">
+                            <h3 style="color: #ffcc00;">📍 Location Found:</h3>
+                            <p><strong>Latitude:</strong> ${location.lat}</p>
+                            <p><strong>Longitude:</strong> ${location.lon}</p>
+                            <p><strong>Location Name:</strong> ${location.display_name}</p>
+                            <hr style="border-color: white;">
+                            <h3 style="color: #00ffcc;">🎯 Nearest Charity:</h3>
+                            <p><strong>${closestCharity.name}</strong> is approximately <strong>${minDistance.toFixed(2)} km</strong> away from you.</p>
+                        </div>
+                    `;
+                } else {
+                    resultDiv.innerHTML = `
+                        <div style="
+                            background: rgba(255, 0, 0, 0.2);
+                            padding: 20px;
+                            border-radius: 10px;
+                            max-width: 500px;
+                            margin: 20px auto;
+                            text-align: center;
+                        ">
+                            <p style="color: red;">❌ No location found. Try a different address.</p>
+                        </div>
+                    `;
+                }
+            })
+            .catch(error => {
+                console.error('Error fetching location:', error);
+                document.getElementById('location-result').innerHTML = `
+                    <div style="
+                        background: rgba(255, 0, 0, 0.2);
+                        padding: 20px;
+                        border-radius: 10px;
+                        max-width: 500px;
+                        margin: 20px auto;
+                        text-align: center;
+                    ">
+                        <p style="color: red;">❌ An error occurred. Please try again later.</p>
+                    </div>
+                `;
+            });
+    });
+</script>
+
 </body>
 </html>
